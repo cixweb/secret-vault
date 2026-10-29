@@ -4,7 +4,7 @@ Keeps one secret string in a Jetpack DataStore encrypted with Tink and an Androi
 
 [![CI](https://github.com/cixweb/secret-vault/actions/workflows/ci.yml/badge.svg)](https://github.com/cixweb/secret-vault/actions/workflows/ci.yml) ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7F52FF) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Secret Vault stores a single secret string in a DataStore file. The file is encrypted with an AEAD from a Tink keyset that is protected by an Android Keystore master key. A one-time migration moves a legacy plaintext value into the encrypted file and deletes the old file. A Compose screen reads and writes the secret and reports the migration outcome and whether the file on disk contains the secret in clear text. JVM tests use a real in-memory Tink AES256_GCM keyset.
+Secret Vault stores a single secret string in a DataStore file. The file is encrypted with an AEAD from a Tink keyset that is protected by an Android Keystore master key, and the vault is opened off the main thread. A one-time migration moves a legacy plaintext value into the encrypted file and deletes the old file. A file that no longer decrypts is reset instead of crashing the app, and the vault files stay out of backups. A Compose screen reads and writes the secret, hidden by default, and reports the migration outcome and whether the file on disk contains the secret in clear text. JVM tests use a real in-memory Tink AES256_GCM keyset.
 
 <table>
 <tr>
@@ -13,7 +13,7 @@ Secret Vault stores a single secret string in a DataStore file. The file is encr
 </tr>
 <tr>
 <td align="center"><b>Migration done</b><br><img src="app/src/screenshotTestDebug/reference/io/github/cixweb/secretvault/ui/MainScreenScreenshotsKt/MigratedScreenshot_Light_2bf0935a_0.png" width="200" alt="Migration done, light"> <img src="app/src/screenshotTestDebug/reference/io/github/cixweb/secretvault/ui/MainScreenScreenshotsKt/MigratedScreenshot_Dark_5590b685_0.png" width="200" alt="Migration done, dark"></td>
-<td align="center"><b>Legacy file pending</b><br><img src="app/src/screenshotTestDebug/reference/io/github/cixweb/secretvault/ui/MainScreenScreenshotsKt/LegacyFilePendingScreenshot_Light_2bf0935a_0.png" width="200" alt="Legacy file pending, light"> <img src="app/src/screenshotTestDebug/reference/io/github/cixweb/secretvault/ui/MainScreenScreenshotsKt/LegacyFilePendingScreenshot_Dark_5590b685_0.png" width="200" alt="Legacy file pending, dark"></td>
+<td align="center"><b>Reset after a lost key</b><br><img src="app/src/screenshotTestDebug/reference/io/github/cixweb/secretvault/ui/MainScreenScreenshotsKt/ResetAfterCorruptionScreenshot_Light_2bf0935a_0.png" width="200" alt="Reset after a lost key, light"> <img src="app/src/screenshotTestDebug/reference/io/github/cixweb/secretvault/ui/MainScreenScreenshotsKt/ResetAfterCorruptionScreenshot_Dark_5590b685_0.png" width="200" alt="Reset after a lost key, dark"></td>
 </tr>
 </table>
 
@@ -50,7 +50,7 @@ Sources are under `app/src/main/java/io/github/cixweb/secretvault/`; `test/` is 
 
 ```text
 crypto/  Source of the Aead.
-data/    Stores, serializers and migration.
+data/    Stores, serializers, migration and corruption reset.
 ui/      Screen and state.
 test/    JVM tests with real Tink encryption.
 ```
@@ -66,13 +66,14 @@ test/    JVM tests with real Tink encryption.
 - **[`EncryptedSecretSerializer.kt`](app/src/main/java/io/github/cixweb/secretvault/data/EncryptedSecretSerializer.kt)**: Wraps the plain serializer in AeadSerializer with the file name as associated data.
 - **[`SecretStore.kt`](app/src/main/java/io/github/cixweb/secretvault/data/SecretStore.kt)**: DataStore wrapper with plaintext and encrypted factories.
 - **[`PlaintextMigration.kt`](app/src/main/java/io/github/cixweb/secretvault/data/PlaintextMigration.kt)**: DataMigration moving the legacy value and deleting the plaintext file.
-- **[`SecretVault.kt`](app/src/main/java/io/github/cixweb/secretvault/data/SecretVault.kt)**: Wires files, AEAD, migration and store together.
+- **[`CorruptionReset.kt`](app/src/main/java/io/github/cixweb/secretvault/data/CorruptionReset.kt)**: Replaces a file that does not decrypt with an empty secret and records it.
+- **[`SecretVault.kt`](app/src/main/java/io/github/cixweb/secretvault/data/SecretVault.kt)**: Opens files, AEAD, migration, corruption reset and store off the main thread.
 - **[`FileInspector.kt`](app/src/main/java/io/github/cixweb/secretvault/data/FileInspector.kt)**: Reads the file bytes to report whether they contain the secret.
 
 ### `ui/`
 
-- **[`MainScreen.kt`](app/src/main/java/io/github/cixweb/secretvault/ui/MainScreen.kt)**: Compose screen for the secret, migration status and file check.
-- **[`SecretViewModel.kt`](app/src/main/java/io/github/cixweb/secretvault/ui/SecretViewModel.kt)**: Holds UI state and calls the store.
+- **[`MainScreen.kt`](app/src/main/java/io/github/cixweb/secretvault/ui/MainScreen.kt)**: Compose screen for the secret (hidden by default), migration status and file check.
+- **[`SecretViewModel.kt`](app/src/main/java/io/github/cixweb/secretvault/ui/SecretViewModel.kt)**: Opens the vault once, holds UI state and turns failures into an error state.
 
 ### `test/`
 
@@ -81,6 +82,8 @@ test/    JVM tests with real Tink encryption.
 - **[`EncryptedSecretSerializerTest.kt`](app/src/test/java/io/github/cixweb/secretvault/data/EncryptedSecretSerializerTest.kt)**: Round trip and CorruptionException for wrong associated data or key.
 - **[`PlaintextMigrationTest.kt`](app/src/test/java/io/github/cixweb/secretvault/data/PlaintextMigrationTest.kt)**: Migration with data, without data, and a second run.
 - **[`SecretStoreTest.kt`](app/src/test/java/io/github/cixweb/secretvault/data/SecretStoreTest.kt)**: Store read/write and check that the encrypted file does not contain the secret.
+- **[`SecretVaultTest.kt`](app/src/test/java/io/github/cixweb/secretvault/data/SecretVaultTest.kt)**: The Aead is built on the IO dispatcher; a bad file or a lost key resets the secret.
+- **[`BackupRulesTest.kt`](app/src/test/java/io/github/cixweb/secretvault/BackupRulesTest.kt)**: Every backup rule excludes the vault files and the keyset preferences.
 
 ## Try it
 
@@ -94,9 +97,9 @@ cd secret-vault
 
 Once it is running:
 
-- Launch the app, enter a secret and save it.
+- Launch the app, enter a secret and save it; turn on Show secret to see it.
 - Restart the app to see the value read back from the encrypted file.
-- Run `./gradlew testDebugUnitTest` to run the encryption, migration and file-content tests.
+- Tap Create legacy plaintext file, then restart the app to watch the migration.
 
 ## Verification
 
@@ -116,7 +119,8 @@ Kotlin, Jetpack Compose and Material 3. Versions, all pinned in `gradle/libs.ver
 - The Keystore-backed provider is not exercised by the JVM tests, only the in-memory one.
 - Only one string is stored.
 - The file check inspects raw bytes for the secret; it does not prove cryptographic strength.
-- There is no key rotation or backup handling.
+- There is no key rotation, and a reset loses the old secret by design.
+- The migration outcome is kept in memory, so after a restart the screen shows that there is nothing left to migrate.
 
 ## License
 

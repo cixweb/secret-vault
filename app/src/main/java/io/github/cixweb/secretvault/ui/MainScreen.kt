@@ -1,10 +1,14 @@
 package io.github.cixweb.secretvault.ui
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import io.github.cixweb.secretvault.R
 import io.github.cixweb.secretvault.data.FileReport
 import io.github.cixweb.secretvault.data.MigrationOutcome
@@ -19,6 +23,7 @@ import io.github.cixweb.secretvault.ui.components.SecondaryButton
 import io.github.cixweb.secretvault.ui.components.SectionCard
 import io.github.cixweb.secretvault.ui.components.Status
 import io.github.cixweb.secretvault.ui.components.StatusBanner
+import io.github.cixweb.secretvault.ui.components.SwitchRow
 import io.github.cixweb.secretvault.ui.theme.AppTheme
 
 @Composable
@@ -27,6 +32,7 @@ fun MainScreen(viewModel: SecretViewModel, modifier: Modifier = Modifier) {
     MainContent(
         state = state,
         onInputChange = viewModel::onInputChange,
+        onRevealChange = viewModel::onRevealChange,
         onSave = viewModel::save,
         onClear = viewModel::clear,
         onSeedLegacy = viewModel::seedLegacyFile,
@@ -38,6 +44,7 @@ fun MainScreen(viewModel: SecretViewModel, modifier: Modifier = Modifier) {
 fun MainContent(
     state: SecretUiState,
     onInputChange: (String) -> Unit,
+    onRevealChange: (Boolean) -> Unit,
     onSave: () -> Unit,
     onClear: () -> Unit,
     onSeedLegacy: () -> Unit,
@@ -48,17 +55,51 @@ fun MainContent(
         subtitle = stringResource(R.string.app_tagline),
         modifier = modifier,
     ) {
+        if (state.unavailable) {
+            StatusBanner(text = stringResource(R.string.vault_unavailable), status = Status.Error)
+        }
         SectionCard(title = stringResource(R.string.secret_section_title)) {
+            if (state.wasReset) {
+                StatusBanner(text = stringResource(R.string.vault_reset), status = Status.Warning)
+            }
             AppTextField(
                 value = state.input,
                 onValueChange = onInputChange,
                 label = stringResource(R.string.secret_label),
+                enabled = !state.unavailable,
+                // Hidden by default, and kept out of the keyboard's suggestions and learning.
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    autoCorrectEnabled = false,
+                ),
+                visualTransformation = if (state.revealed) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
             )
-            PrimaryButton(text = stringResource(R.string.action_save), onClick = onSave)
-            SecondaryButton(text = stringResource(R.string.action_clear), onClick = onClear)
+            SwitchRow(
+                label = stringResource(R.string.reveal_label),
+                checked = state.revealed,
+                onCheckedChange = onRevealChange,
+            )
+            PrimaryButton(
+                text = stringResource(R.string.action_save),
+                onClick = onSave,
+                enabled = !state.unavailable,
+            )
+            SecondaryButton(
+                text = stringResource(R.string.action_clear),
+                onClick = onClear,
+                enabled = !state.unavailable,
+            )
             LabeledValue(
                 label = stringResource(R.string.stored_label),
-                value = state.stored.ifEmpty { stringResource(R.string.stored_empty) },
+                value = when {
+                    state.stored.isEmpty() -> stringResource(R.string.stored_empty)
+                    state.revealed -> state.stored
+                    else -> MASK
+                },
             )
         }
         SectionCard(title = stringResource(R.string.migration_section_title)) {
@@ -105,6 +146,8 @@ fun MainContent(
     }
 }
 
+private const val MASK = "••••••••"
+
 val previewState = SecretUiState(
     input = "hunter2-token",
     stored = "hunter2-token",
@@ -121,6 +164,6 @@ val previewState = SecretUiState(
 @Composable
 fun MainScreenPreview() {
     AppTheme {
-        MainContent(previewState, {}, {}, {}, {})
+        MainContent(previewState, {}, {}, {}, {}, {})
     }
 }

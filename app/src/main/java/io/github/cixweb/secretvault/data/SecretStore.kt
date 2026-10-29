@@ -3,6 +3,7 @@ package io.github.cixweb.secretvault.data
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.google.crypto.tink.Aead
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
@@ -32,16 +33,21 @@ class SecretStore(private val dataStore: DataStore<String>) {
                 ),
             )
 
-        /** The current store: every write is encrypted with [aead], bound to the file name. */
+        /**
+         * The current store: every write is encrypted with [aead], bound to the file name.
+         * Without a [corruptionHandler], a file that does not decrypt fails every read.
+         */
         fun encrypted(
             file: File,
             aead: Aead,
             scope: CoroutineScope,
             migrations: List<DataMigration<String>> = emptyList(),
+            corruptionHandler: ReplaceFileCorruptionHandler<String>? = null,
         ): SecretStore =
             SecretStore(
                 DataStoreFactory.create(
                     serializer = encryptedSecretSerializer(aead, file.name),
+                    corruptionHandler = corruptionHandler,
                     scope = scope,
                     migrations = migrations,
                     produceFile = { file },

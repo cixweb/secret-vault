@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         viewModelFactory {
             initializer {
                 SecretViewModel { scope ->
-                    SecretVault.create(
+                    SecretVault.open(
                         dir = applicationContext.filesDir,
                         aeadProvider = KeystoreAeadProvider(applicationContext),
                         scope = scope,

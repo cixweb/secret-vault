@@ -27,9 +27,11 @@ class KeystoreAeadProvider(context: Context) : AeadProvider {
 
     override fun aead(): Aead = aead
 
-    private companion object {
-        const val KEYSET_NAME = "secret_keyset"
-        const val KEYSET_PREFS = "secret_keyset_prefs"
-        const val MASTER_KEY_URI = "android-keystore://secret_master_key"
+    companion object {
+        private const val KEYSET_NAME = "secret_keyset"
+        private const val MASTER_KEY_URI = "android-keystore://secret_master_key"
+
+        /** Excluded from backups (res/xml): the Keystore key that decrypts it is not backed up. */
+        internal const val KEYSET_PREFS = "secret_keyset_prefs"
     }
 }

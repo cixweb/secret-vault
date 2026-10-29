@@ -11,7 +11,7 @@ import io.github.cixweb.secretvault.ui.theme.AppTheme
 @Composable
 private fun Screen(state: SecretUiState) {
     AppTheme {
-        MainContent(state, {}, {}, {}, {})
+        MainContent(state, {}, {}, {}, {}, {})
     }
 }
 
@@ -34,6 +34,25 @@ fun EncryptedStoredScreenshot() {
 @Composable
 fun MigratedScreenshot() {
     Screen(previewState.copy(migration = MigrationOutcome.Migrated))
+}
+
+@PreviewTest
+@ScreenPreviews
+@Composable
+fun RevealedScreenshot() {
+    Screen(previewState.copy(revealed = true))
+}
+
+@PreviewTest
+@ScreenPreviews
+@Composable
+fun ResetAfterCorruptionScreenshot() {
+    Screen(
+        SecretUiState(
+            wasReset = true,
+            migration = MigrationOutcome.NothingToMigrate,
+        ),
+    )
 }
 
 @PreviewTest

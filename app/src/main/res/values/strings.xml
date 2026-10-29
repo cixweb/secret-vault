@@ -7,6 +7,9 @@
     <string name="action_clear">Clear</string>
     <string name="stored_label">Stored</string>
     <string name="stored_empty">nothing yet</string>
+    <string name="reveal_label">Show secret</string>
+    <string name="vault_reset">The stored secret could not be decrypted and was cleared</string>
+    <string name="vault_unavailable">Secure storage is unavailable on this device</string>
     <string name="migration_section_title">Migration</string>
     <string name="migration_pending">Plaintext file found, it moves on next start</string>
     <string name="migration_done">Plaintext moved and deleted</string>
