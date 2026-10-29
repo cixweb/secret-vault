@@ -30,7 +30,6 @@ The encrypted store wraps the plain serializer in AeadSerializer. Every write is
 The Aead comes from an AeadProvider interface. On the device, the implementation uses AndroidKeysetManager with a Keystore master key, so the keyset itself is stored encrypted. In tests an in-memory provider builds a real AES256_GCM keyset, so the tests exercise real encryption instead of a fake.
 
 ```kotlin
-
 /**
  * Encrypts what [SecretSerializer] writes. The file name is the associated data, so a file
  * copied or renamed to another name no longer decrypts; failures surface as CorruptionException.
@@ -47,13 +46,13 @@ From [`EncryptedSecretSerializer.kt`](app/src/main/java/io/github/cixweb/secretv
 
 ## Code map
 
-Sources are under `app/src/main/java/io/github/cixweb/secretvault/`.
+Sources are under `app/src/main/java/io/github/cixweb/secretvault/`; `test/` is the same package under `app/src/test/`.
 
 ```text
-crypto/                                          Source of the Aead.
-data/                                            Stores, serializers and migration.
-ui/                                              Screen and state.
-app/src/test/java/io/github/cixweb/secretvault/  JVM tests with real Tink encryption.
+crypto/  Source of the Aead.
+data/    Stores, serializers and migration.
+ui/      Screen and state.
+test/    JVM tests with real Tink encryption.
 ```
 
 ### `crypto/`
@@ -75,7 +74,7 @@ app/src/test/java/io/github/cixweb/secretvault/  JVM tests with real Tink encryp
 - **[`MainScreen.kt`](app/src/main/java/io/github/cixweb/secretvault/ui/MainScreen.kt)**: Compose screen for the secret, migration status and file check.
 - **[`SecretViewModel.kt`](app/src/main/java/io/github/cixweb/secretvault/ui/SecretViewModel.kt)**: Holds UI state and calls the store.
 
-### `app/src/test/java/io/github/cixweb/secretvault/`
+### `test/`
 
 - **[`InMemoryAeadProvider.kt`](app/src/test/java/io/github/cixweb/secretvault/crypto/InMemoryAeadProvider.kt)**: Test provider with a real in-memory AES256_GCM keyset.
 - **[`AeadProviderTest.kt`](app/src/test/java/io/github/cixweb/secretvault/crypto/AeadProviderTest.kt)**: Encrypts and decrypts bytes with the test provider.
