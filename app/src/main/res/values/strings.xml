@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">App</string>
+    <string name="app_tagline">One screen, one idea</string>
+    <string name="main_section_title">Start here</string>
+    <string name="main_section_body">This screen is replaced by the app.</string>
+</resources>
