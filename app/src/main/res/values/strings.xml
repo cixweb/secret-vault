@@ -1,6 +1,22 @@
 <resources>
-    <string name="app_name">App</string>
-    <string name="app_tagline">One screen, one idea</string>
-    <string name="main_section_title">Start here</string>
-    <string name="main_section_body">This screen is replaced by the app.</string>
+    <string name="app_name">Secret Vault</string>
+    <string name="app_tagline">One secret, encrypted on disk</string>
+    <string name="secret_section_title">Secret</string>
+    <string name="secret_label">Secret value</string>
+    <string name="action_save">Save</string>
+    <string name="action_clear">Clear</string>
+    <string name="stored_label">Stored</string>
+    <string name="stored_empty">nothing yet</string>
+    <string name="migration_section_title">Migration</string>
+    <string name="migration_pending">Plaintext file found, it moves on next start</string>
+    <string name="migration_done">Plaintext moved and deleted</string>
+    <string name="migration_none">No plaintext file to migrate</string>
+    <string name="action_seed_legacy">Create legacy plaintext file</string>
+    <string name="disk_section_title">On disk</string>
+    <string name="disk_empty">Nothing stored to check</string>
+    <string name="disk_encrypted">Secret not found in file bytes</string>
+    <string name="disk_exposed">Secret is readable in the file</string>
+    <string name="disk_file">File</string>
+    <string name="disk_size">Size</string>
+    <string name="disk_size_value">%1$d bytes</string>
 </resources>
