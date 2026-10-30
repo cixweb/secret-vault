@@ -9,7 +9,10 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
 /**
  * An AES256_GCM keyset kept in private preferences, itself encrypted with a master key that
- * lives in the Android Keystore and never leaves it.
+ * lives in the Android Keystore and never leaves it. The keyset is created on the first
+ * call to [aead] and reused after that.
+ *
+ * @param context any context; only its application context is kept.
  */
 class KeystoreAeadProvider(context: Context) : AeadProvider {
     private val appContext = context.applicationContext

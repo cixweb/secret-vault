@@ -8,10 +8,12 @@ import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
  * DataStore replaces the file with an empty secret, and [happened] lets the UI say so.
  */
 class CorruptionReset {
+    /** True once [handler] has replaced a file that did not decrypt in this process. */
     @Volatile
     var happened: Boolean = false
         private set
 
+    /** Give it to the DataStore: it records the reset and starts from an empty secret. */
     val handler = ReplaceFileCorruptionHandler<String> {
         happened = true
         SecretSerializer.defaultValue

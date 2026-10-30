@@ -32,7 +32,14 @@ import io.github.cixweb.secretvault.R
  * The frame of every screen: the top bar with the app icon, title and an optional action,
  * then the content as a column of sections, 16 dp from the edges and 12 dp apart.
  *
- * Set [scrollable] to false when the content holds its own lazy list.
+ * @param title the screen name, read as a heading by screen readers.
+ * @param modifier applied to the whole frame.
+ * @param subtitle one line under the title, such as what the screen shows.
+ * @param action shown at the end of the top bar, usually an [ActionChip].
+ * @param scrollable false when the content holds its own lazy list, which cannot sit
+ *   inside a scrolling column.
+ * @param bottomBar shown under the content, such as a row of buttons.
+ * @param content the sections of the screen, usually [SectionCard]s.
  */
 @Composable
 fun AppScaffold(
@@ -63,6 +70,14 @@ fun AppScaffold(
     }
 }
 
+/**
+ * The top bar of [AppScaffold], public for screens that need it on its own.
+ *
+ * @param title the screen name, read as a heading by screen readers.
+ * @param modifier applied to the bar.
+ * @param subtitle one line under the title.
+ * @param action shown at the end of the bar.
+ */
 @Composable
 fun AppTopBar(
     title: String,
@@ -111,7 +126,13 @@ fun AppTopBar(
     }
 }
 
-/** A small pill button for the top bar, such as a link to the docs or a reset. */
+/**
+ * A small pill button for the top bar, such as a link to the docs or a reset.
+ *
+ * @param text the label, short enough for one line.
+ * @param onClick called on tap.
+ * @param modifier applied to the chip, which keeps the minimum touch target.
+ */
 @Composable
 fun ActionChip(
     text: String,

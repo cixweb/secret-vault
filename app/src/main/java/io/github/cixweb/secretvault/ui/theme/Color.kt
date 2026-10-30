@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 // Signal palette. Every color of the app comes from here: screens read them through
 // MaterialTheme.colorScheme and AppTheme.colors, never as literals.
 
+/** Material 3 colors of the light theme: indigo accents on cool grays. */
 internal val LightColors = lightColorScheme(
     primary = Color(0xFF3D4EDB),
     onPrimary = Color(0xFFFFFFFF),
@@ -40,6 +41,7 @@ internal val LightColors = lightColorScheme(
     onErrorContainer = Color(0xFF8C1D18),
 )
 
+/** Material 3 colors of the dark theme: the same hues, lighter on dark surfaces. */
 internal val DarkColors = darkColorScheme(
     primary = Color(0xFFA9B3FF),
     onPrimary = Color(0xFF121A5C),
@@ -72,7 +74,15 @@ internal val DarkColors = darkColorScheme(
     onErrorContainer = Color(0xFFF9DEDC),
 )
 
-/** Status colors Material 3 does not define, used by StatusBanner. */
+/**
+ * Status colors Material 3 does not define, used by StatusBanner. Error and info use
+ * the Material error and primary containers.
+ *
+ * @property successContainer background of a success banner.
+ * @property onSuccessContainer text and icon on [successContainer].
+ * @property warningContainer background of a warning banner.
+ * @property onWarningContainer text and icon on [warningContainer].
+ */
 @Immutable
 data class AppColors(
     val successContainer: Color,
@@ -81,6 +91,7 @@ data class AppColors(
     val onWarningContainer: Color,
 )
 
+/** Status colors of the light theme. */
 internal val LightAppColors = AppColors(
     successContainer = Color(0xFFE3F3E8),
     onSuccessContainer = Color(0xFF155E2E),
@@ -88,6 +99,7 @@ internal val LightAppColors = AppColors(
     onWarningContainer = Color(0xFF7A4A00),
 )
 
+/** Status colors of the dark theme. */
 internal val DarkAppColors = AppColors(
     successContainer = Color(0xFF14301E),
     onSuccessContainer = Color(0xFF9BE0AE),
