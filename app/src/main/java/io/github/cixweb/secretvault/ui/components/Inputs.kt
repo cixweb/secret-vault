@@ -25,7 +25,22 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-/** A text field with its label above it, filled with the screen background. */
+/**
+ * A text field with its label above it, filled with the screen background so it stands
+ * out inside a [SectionCard].
+ *
+ * @param value the text shown.
+ * @param onValueChange called with the new text on every edit.
+ * @param label shown above the field and read by screen readers.
+ * @param modifier applied to the label and the field together.
+ * @param placeholder shown while the field is empty.
+ * @param supportingText shown under the field, such as a hint or an error.
+ * @param isError shows the field in the error colors.
+ * @param singleLine false for text that may span lines.
+ * @param enabled false to show the field without accepting input.
+ * @param keyboardOptions the keyboard type and options, such as for a password.
+ * @param visualTransformation how the text is drawn, such as masked for a password.
+ */
 @Composable
 fun AppTextField(
     value: String,
@@ -76,7 +91,14 @@ fun AppTextField(
     }
 }
 
-/** The main action of a section: full width, pill shaped. */
+/**
+ * The main action of a section: full width, pill shaped.
+ *
+ * @param text the label.
+ * @param onClick called on tap.
+ * @param modifier applied to the button.
+ * @param enabled false while the action is not possible.
+ */
 @Composable
 fun PrimaryButton(
     text: String,
@@ -96,7 +118,14 @@ fun PrimaryButton(
     }
 }
 
-/** A second action next to or below a PrimaryButton. */
+/**
+ * A second action next to or below a [PrimaryButton], in a quieter color.
+ *
+ * @param text the label.
+ * @param onClick called on tap.
+ * @param modifier applied to the button.
+ * @param enabled false while the action is not possible.
+ */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -116,7 +145,17 @@ fun SecondaryButton(
     }
 }
 
-/** A setting that is on or off; the whole row is the touch target. */
+/**
+ * A setting that is on or off. The whole row is the touch target and is read as one
+ * switch by screen readers.
+ *
+ * @param label what the setting does.
+ * @param checked whether it is on.
+ * @param onCheckedChange called with the new value when the row is tapped.
+ * @param modifier applied to the row.
+ * @param description one line under the label, such as what changes when it is on.
+ * @param enabled false to show the setting without accepting changes.
+ */
 @Composable
 fun SwitchRow(
     label: String,

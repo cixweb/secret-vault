@@ -42,7 +42,7 @@ fun encryptedSecretSerializer(aead: Aead, fileName: String): Serializer<String> 
     )
 ```
 
-From [`EncryptedSecretSerializer.kt`](app/src/main/java/io/github/cixweb/secretvault/data/EncryptedSecretSerializer.kt#L6-L16), lines 6-16.
+From [`EncryptedSecretSerializer.kt`](app/src/main/java/io/github/cixweb/secretvault/data/EncryptedSecretSerializer.kt#L7-L16), lines 7-16.
 
 ## Code map
 

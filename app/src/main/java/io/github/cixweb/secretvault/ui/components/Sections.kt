@@ -28,7 +28,13 @@ import androidx.compose.ui.unit.dp
 import io.github.cixweb.secretvault.R
 import io.github.cixweb.secretvault.ui.theme.AppTheme
 
-/** A titled block of content on the screen background: the unit every screen is made of. */
+/**
+ * A titled block of content on the screen background: the unit every screen is made of.
+ *
+ * @param modifier applied to the card, which fills the width.
+ * @param title read as a heading by screen readers; null for a card without one.
+ * @param content the rows of the card, 12 dp apart.
+ */
 @Composable
 fun SectionCard(
     modifier: Modifier = Modifier,
@@ -57,7 +63,14 @@ fun SectionCard(
     }
 }
 
-/** One label and its value on a row; [monospace] for file names, keys and numbers. */
+/**
+ * One label and its value on a row, read together by screen readers.
+ *
+ * @param label what the value is, on the left.
+ * @param value the value, on the right; it wraps when long.
+ * @param modifier applied to the row.
+ * @param monospace true for file names, keys and numbers.
+ */
 @Composable
 fun LabeledValue(
     label: String,
@@ -86,7 +99,13 @@ fun LabeledValue(
     }
 }
 
-/** Code, bytes or log lines, in monospace; long lines scroll sideways instead of wrapping. */
+/**
+ * Code, bytes or log lines, in monospace. Long lines scroll sideways instead of
+ * wrapping, so the columns of a hex dump stay aligned.
+ *
+ * @param text the lines to show, as they are.
+ * @param modifier applied to the block, which fills the width.
+ */
 @Composable
 fun CodeBlock(
     text: String,
@@ -109,9 +128,16 @@ fun CodeBlock(
     }
 }
 
+/** The kind of a [StatusBanner], which sets its colors and icon. */
 enum class Status { Success, Warning, Error, Info }
 
-/** The outcome of an action or a check, announced to screen readers when it changes. */
+/**
+ * The outcome of an action or a check, announced to screen readers when it changes.
+ *
+ * @param text one short sentence.
+ * @param status the kind of outcome, which sets the colors and the icon.
+ * @param modifier applied to the banner, which fills the width.
+ */
 @Composable
 fun StatusBanner(
     text: String,

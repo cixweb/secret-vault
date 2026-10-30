@@ -13,6 +13,11 @@ import io.github.cixweb.secretvault.ui.MainScreen
 import io.github.cixweb.secretvault.ui.SecretViewModel
 import io.github.cixweb.secretvault.ui.theme.AppTheme
 
+/**
+ * The only activity. It builds the [SecretViewModel], which opens the vault in the app's
+ * private files directory with a Keystore-backed key and keeps it across configuration
+ * changes.
+ */
 class MainActivity : ComponentActivity() {
     private val viewModel: SecretViewModel by viewModels {
         viewModelFactory {

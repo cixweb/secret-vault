@@ -26,6 +26,12 @@ import io.github.cixweb.secretvault.ui.components.StatusBanner
 import io.github.cixweb.secretvault.ui.components.SwitchRow
 import io.github.cixweb.secretvault.ui.theme.AppTheme
 
+/**
+ * The vault screen, connected to [viewModel].
+ *
+ * @param viewModel holds the state and runs the actions.
+ * @param modifier applied to the whole screen.
+ */
 @Composable
 fun MainScreen(viewModel: SecretViewModel, modifier: Modifier = Modifier) {
     val state by viewModel.state.collectAsState()
@@ -40,6 +46,18 @@ fun MainScreen(viewModel: SecretViewModel, modifier: Modifier = Modifier) {
     )
 }
 
+/**
+ * The vault screen drawn from [state] alone, so previews and screenshot tests need no
+ * ViewModel.
+ *
+ * @param state what to show.
+ * @param onInputChange called with the new text on every edit.
+ * @param onRevealChange called when the Show secret switch changes.
+ * @param onSave called by Save.
+ * @param onClear called by Clear.
+ * @param onSeedLegacy called by Create legacy plaintext file.
+ * @param modifier applied to the whole screen.
+ */
 @Composable
 fun MainContent(
     state: SecretUiState,
@@ -148,6 +166,7 @@ fun MainContent(
 
 private const val MASK = "••••••••"
 
+/** An encrypted secret on disk: the base state of the previews and screenshot tests. */
 val previewState = SecretUiState(
     input = "hunter2-token",
     stored = "hunter2-token",

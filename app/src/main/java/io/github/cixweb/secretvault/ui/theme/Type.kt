@@ -12,6 +12,7 @@ import io.github.cixweb.secretvault.R
 // Inter for text, JetBrains Mono for code, keys and bytes. Both fonts are bundled
 // (SIL Open Font License, see licenses/), so previews and screenshots match the device.
 
+/** Inter, the font of all text that is not code. */
 val Inter = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal),
     Font(R.font.inter_medium, FontWeight.Medium),
@@ -19,6 +20,7 @@ val Inter = FontFamily(
     Font(R.font.inter_bold, FontWeight.Bold),
 )
 
+/** JetBrains Mono, the font of code, keys and bytes. */
 val JetBrainsMono = FontFamily(
     Font(R.font.jetbrains_mono_regular, FontWeight.Normal),
     Font(R.font.jetbrains_mono_medium, FontWeight.Medium),
@@ -32,6 +34,7 @@ private fun inter(weight: FontWeight, size: Int, line: Int, tracking: Double = 0
     letterSpacing = tracking.sp,
 )
 
+/** The Material 3 type scale, all in Inter. */
 internal val AppTypographyM3 = Typography(
     displayLarge = inter(FontWeight.Bold, 48, 56, -0.5),
     displayMedium = inter(FontWeight.Bold, 40, 48, -0.5),
@@ -50,7 +53,12 @@ internal val AppTypographyM3 = Typography(
     labelSmall = inter(FontWeight.Medium, 12, 16, 0.2),
 )
 
-/** Monospace styles Material 3 does not define. */
+/**
+ * Monospace styles Material 3 does not define.
+ *
+ * @property code text of a CodeBlock and monospace values.
+ * @property codeLabel short monospace labels, such as a file name above a block.
+ */
 @Immutable
 data class AppTypography(
     val code: TextStyle = TextStyle(

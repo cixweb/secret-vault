@@ -21,6 +21,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Everything the screen shows.
+ *
+ * @property input the text in the field, not saved yet.
+ * @property stored the secret as last read from or written to the store.
+ * @property revealed whether the secret is shown instead of masked.
+ * @property migration what the migration did at start.
+ * @property plaintextPresent whether a legacy file waits for the next start to migrate it.
+ * @property wasReset whether the store replaced a file that did not decrypt.
+ * @property unavailable whether the vault failed to open or to save; the field, Save and
+ *   Clear are disabled.
+ * @property report what the encrypted file on disk holds.
+ */
 data class SecretUiState(
     val input: String = "",
     val stored: String = "",
@@ -32,11 +45,19 @@ data class SecretUiState(
     val report: FileReport = FileReport(SecretStore.ENCRYPTED_FILE_NAME, 0, "", Verdict.NoSecret),
 )
 
+/**
+ * Holds the screen state and runs every action on the vault.
+ *
+ * @param openVault opens the vault in the given scope. It is called once and must not
+ *   block, as [SecretVault.open] does by moving to `Dispatchers.IO`. Tests pass one with
+ *   an in-memory key.
+ */
 class SecretViewModel(openVault: suspend (CoroutineScope) -> SecretVault) : ViewModel() {
     // Opened off the main thread; every action waits for it.
     private val vault: Deferred<SecretVault> = viewModelScope.async { openVault(viewModelScope) }
 
     private val _state = MutableStateFlow(SecretUiState())
+    /** The state to draw; it changes after every action. */
     val state: StateFlow<SecretUiState> = _state.asStateFlow()
 
     init {
@@ -54,20 +75,24 @@ class SecretViewModel(openVault: suspend (CoroutineScope) -> SecretVault) : View
         }
     }
 
+    /** Updates the field; nothing is saved until [save]. */
     fun onInputChange(value: String) {
         _state.update { it.copy(input = value) }
     }
 
+    /** Shows or masks the secret, in the field and in the stored value. */
     fun onRevealChange(revealed: Boolean) {
         _state.update { it.copy(revealed = revealed) }
     }
 
+    /** Saves the text of the field as the secret, then inspects the file again. */
     fun save() = withVault { vault ->
         val value = _state.value.input
         vault.store.save(value)
         refresh(vault, value)
     }
 
+    /** Stores an empty secret and empties the field. */
     fun clear() = withVault { vault ->
         vault.store.clear()
         _state.update { it.copy(input = "") }
