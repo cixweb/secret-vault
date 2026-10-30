@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12 and later. The Keystore key that decrypts the keyset never leaves the device,
+    so a restored secret.enc could not be read: keep the vault out of cloud backups and
+    device-to-device transfers. The legacy plaintext file stays out too.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="secret.enc" />
+        <exclude domain="file" path="secret.txt" />
+        <exclude domain="sharedpref" path="secret_keyset_prefs.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="secret.enc" />
+        <exclude domain="file" path="secret.txt" />
+        <exclude domain="sharedpref" path="secret_keyset_prefs.xml" />
+    </device-transfer>
+</data-extraction-rules>

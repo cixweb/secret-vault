@@ -25,7 +25,7 @@ class PlaintextMigrationTest {
     private fun openAndRead(): Pair<SecretVault, String> = runBlocking {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         try {
-            val vault = SecretVault.create(folder.root, aeadProvider, scope)
+            val vault = SecretVault.open(folder.root, aeadProvider, scope)
             vault to vault.store.secret.first()
         } finally {
             scope.cancel()
